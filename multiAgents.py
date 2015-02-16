@@ -85,28 +85,27 @@ class ReflexAgent(Agent):
         """
         #score = ghost distance - distance to nearest food
         score = 0
+        if successorGameState.isLose():
+          return -999999
+        if successorGameState.isWin():
+          return 999999
+
         for ghostState in newGhostStates:
           if ghostState.scaredTimer > 0:
             #scared
             score = score - manhattanDistance(ghostState.getPosition(), newPos)
           else:
             #not scared
-            if manhattanDistance(ghostState.getPosition(), newPos) == 0:
-              score = score - 999999
-            else:
-              if manhattanDistance(ghostState.getPosition(), newPos) < 10:
-                score = score + manhattanDistance(ghostState.getPosition(), newPos)
+            if manhattanDistance(ghostState.getPosition(), newPos) < 8:
+              score = score + manhattanDistance(ghostState.getPosition(), newPos)
 
-        if successorGameState.getNumFood() == 0:
-          score = score + 999999
-        else:
-          foodlist = newFood.asList()
-          minh = 999999
-          for food in foodlist:
-            if manhattanDistance(food, newPos) < minh:
-              minh = manhattanDistance(food, newPos)
-          score = score - minh
-          score = score - 2*len(foodlist)
+        foodlist = newFood.asList()
+        minh = 999999
+        for food in foodlist:
+          if manhattanDistance(food, newPos) < minh:
+            minh = manhattanDistance(food, newPos)
+        score = score - minh
+        score = score - 2*len(foodlist)
         score = score - 100 * len(successorGameState.getCapsules())
         return score
 
