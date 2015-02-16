@@ -91,7 +91,7 @@ class ReflexAgent(Agent):
         
         for p in newCap:
           d = util.manhattanDistance(newPos, p)
-          score -= d
+          score -= 10 * d
 
         
         for g in newGhostStates:
@@ -100,14 +100,14 @@ class ReflexAgent(Agent):
           if g.scaredTimer > 0: # not scared 
             score -= d
           else:  # scared 
-            if d < 10:
+            if d < 15:
               score += d
         nfoodlist = len(newFood.asList())
         ofoodlist = len(oldFood.asList())
         ncaplist = len(newCap)
         ocaplist = len(oldCap)
         # score = score - 50*(nfoodlist - ofoodlist)
-        score = score - 100*(nfoodlist - ofoodlist) - 100*(ncaplist - ocaplist)
+        score = score - 50*(nfoodlist - ofoodlist) - 100*(ncaplist - ocaplist)
 
         "*** YOUR CODE HERE ***"
         return score
@@ -171,7 +171,42 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # print("number of agents: ", gameState.getNumAgents(), "depth: ", self.depth)
+        return self.value(gameState, self.index, self.depth)[1]
+      
+    def value(self,gameState,agentIndex, currdepth):
+      """ an evaluate function that returns the value of current node"""
+      # print("agentIndex: ", agentIndex, "currdepth: ", currdepth)
+      BIGNUM = float("inf")
+      numofghosts = gameState.getNumAgents()- 1 
+      
+      if currdepth == 0 or gameState.isLose() or gameState.isWin():
+        finalvalue = self.evaluationFunction(gameState)
+        return (finalvalue, None)
+      if agentIndex == 0: #maximizer
+        bestvalue = -BIGNUM
+        bestaction = None
+        for possibleaction in gameState.getLegalActions(agentIndex):
+          successorState = gameState.generateSuccessor(agentIndex, possibleaction)
+          val, action = self.value(successorState,agentIndex + 1, currdepth)
+          if val > bestvalue:
+            bestvalue = val
+            bestaction = possibleaction
+        return (bestvalue, bestaction)
+      else:
+        bestvalue = BIGNUM
+        bestaction = None 
+        for possibleaction in gameState.getLegalActions(agentIndex):
+          successorState = gameState.generateSuccessor(agentIndex, possibleaction)
+          if agentIndex < numofghosts:
+            val, action = self.value(successorState, agentIndex + 1, currdepth )
+          else:
+            val, action = self.value(successorState, 0, currdepth - 1 )
+          if val < bestvalue:
+            bestvalue = val
+            bestaction = possibleaction
+        return (bestvalue, bestaction)
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
