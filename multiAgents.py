@@ -319,9 +319,102 @@ def betterEvaluationFunction(currentGameState):
       evaluation function (question 5).
 
       DESCRIPTION: <write something here so we know what you did>
+      features:
+      1. number of foods left
+      2. distance(pacman, closest_dots)
+      3. distance(pacman, ghosts) 
+
+      linear combination ...
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    BIGNUM = float("inf")
+    pacPos = currentGameState.getPacmanPosition()
+    x = pacPos[0]
+    y = pacPos[1]
+    foodPos = currentGameState.getFood()
+    ghostStates = currentGameState.getGhostStates() # in each state, show ghost scared or not
+    # scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates] #how much scared time they have left
+    capPos = currentGameState.getCapsules()
+    wallPos = currentGameState.getWalls()
+    if currentGameState.isLose():
+      return -BIGNUM
+    if currentGameState.isWin():
+      return BIGNUM
+
+    numberFoodLeft = len(foodPos.asList())
+    numberCapLeft = len(capPos)
+    numberDotLeft = numberFoodLeft + numberCapLeft
+    score = 0
+
+    if surroundbywall(currentGameState, pacPos):
+      score -=1000
+    #distance to closeset food
+    shortestFood = BIGNUM;
+    for p in foodPos.asList():
+      d = util.manhattanDistance( pacPos, p)
+      if d < shortestFood:
+        shortestFood = d
+    #distance to closest cap
+    shortestCap= BIGNUM;
+    for p in capPos:
+      d = util.manhattanDistance( pacPos, p)
+      if d < shortestCap:
+        shortestCap = d
+    #ghostdistance score   
+
+    
+    for g in ghostStates:
+      p = g.getPosition()
+      d = util.manhattanDistance( pacPos, p)
+      if g.scaredTimer > 0: # not scared 
+       
+        score -= d
+        # if surroundbywall(currentGameState, pacPos):
+        #   score -=1000
+        # print("hey yo not scared", g.scaredTimer, score, d)
+      else:  # scared 
+
+        if d < 5:
+          score +=  d
+
+    score = - 15* numberFoodLeft - 20 * numberCapLeft - 2 * shortestFood
+    return score 
+
+
+def surroundbywall(currentGameState, pacPos):
+  x = pacPos[0]
+  y = pacPos[1]
+  walls = currentGameState.getWalls()
+  if walls[x + 1][y] or walls[x - 1][y] or walls[x][y + 1] or walls[x][y -1]:
+    return True
+  return False 
+
+
+
+
+# def pluswalldis(currentGameState, xy1, xy2):
+    
+#     cost = util.manhattanDistance(xy1, xy2)
+#     walls = currentGameState.getWalls()
+    
+#     x1 = xy1[0]
+#     y1 = xy1[1]
+#     x2 = int(xy2[0])
+#     y2 = int(xy2[1])
+#     a, b, c, d = 0, 0, 0, 0 
+#     for x in range(min(x1,x2), max(x1,x2)):
+#         if walls[x][y1]:
+#             a = a + 1
+#         if walls[x][y2]:
+#             b = b + 1
+#     for y in range(min(y1, y2), max(y1, y2)):
+#         if walls[x1][y]:
+#             c = c + 1
+#         if walls[x2][y]:
+#             d = d + 1
+#     one = (c + b + cost) 
+#     two = (a + d + cost) 
+#     return min(one, two)
 
 # Abbreviation
 better = betterEvaluationFunction
