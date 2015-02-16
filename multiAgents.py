@@ -278,8 +278,41 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
-
+        return self.value(gameState, self.index, self.depth)[1]
+      
+    def value(self,gameState,agentIndex, currdepth):
+      """ an evaluate function that returns the value of current node"""
+      # print("agentIndex: ", agentIndex, "currdepth: ", currdepth)
+      BIGNUM = float("inf")
+      numofghosts = gameState.getNumAgents()- 1 
+      
+      if currdepth == 0 or gameState.isLose() or gameState.isWin():
+        finalvalue = self.evaluationFunction(gameState)
+        return (finalvalue, None)
+      if agentIndex == 0: #maximizer
+        bestvalue = -BIGNUM
+        bestaction = None
+        for possibleaction in gameState.getLegalActions(agentIndex):
+          successorState = gameState.generateSuccessor(agentIndex, possibleaction)
+          val, action = self.value(successorState,agentIndex + 1, currdepth)
+          if val > bestvalue:
+            bestvalue = val
+            bestaction = possibleaction
+        return (bestvalue, bestaction)
+      else: #expectimax
+        average = 0
+        bestaction = None 
+        numofcandidates = float(len(gameState.getLegalActions(agentIndex)))
+        for possibleaction in gameState.getLegalActions(agentIndex):
+          successorState = gameState.generateSuccessor(agentIndex, possibleaction)
+          if agentIndex < numofghosts:
+            val, action = self.value(successorState, agentIndex + 1, currdepth )
+          else:
+            val, action = self.value(successorState, 0, currdepth - 1 )
+          average += 1.0/ numofcandidates * val
+            
+        # bestaction = possibleaction
+        return (average, None)
 def betterEvaluationFunction(currentGameState):
     """
       Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
