@@ -91,26 +91,23 @@ class ReflexAgent(Agent):
         
         for p in newCap:
           d = util.manhattanDistance(newPos, p)
-          score -= 10 * d
+          score -= d
 
         
         for g in newGhostStates:
           p = g.getPosition()
           d = util.manhattanDistance(newPos,p)
-          if g.scaredTimer > 0:
+          if g.scaredTimer > 0: # not scared 
             score -= d
-          else:
-            if d < 15:
+          else:  # scared 
+            if d < 10:
               score += d
         nfoodlist = len(newFood.asList())
         ofoodlist = len(oldFood.asList())
         ncaplist = len(newCap)
         ocaplist = len(oldCap)
         # score = score - 50*(nfoodlist - ofoodlist)
-        score = score - 50*(nfoodlist - ofoodlist) - 100*(ncaplist - ocaplist)
-
-
-
+        score = score - 100*(nfoodlist - ofoodlist) - 100*(ncaplist - ocaplist)
 
         "*** YOUR CODE HERE ***"
         return score
