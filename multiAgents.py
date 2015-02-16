@@ -358,22 +358,31 @@ def betterEvaluationFunction(currentGameState):
         shortestCap = d
     #ghostdistance score   
 
-    
+    #value table, smaller score the more important
+    scared_val = -30
+    unscared_val = 5
+    bound_dis = 5
+    food_val = -10
+    cap_val = -20
+    food_dis_val = -2
+    cap_dis_val = -4
+
+    inbound = 0 #check if any not scared ghost is in bound dis
+
     for g in ghostStates:
       p = g.getPosition()
       d = util.manhattanDistance( pacPos, p)
-      if g.scaredTimer > 0: #scared 
-       
-        score -= 10*d
-        # if surroundbywall(currentGameState, pacPos):
-        #   score -=1000
-        # print("hey yo not scared", g.scaredTimer, score, d)
+      if g.scaredTimer > 0: #scared  
+        score += scared_val * d
+        inbound = 0
       else:  # not scared 
+        if d < bound_dis:
+          score +=  unscared_val * d
+          inbound += 1
+    if inbound:
+      score = score + 10 * cap_val * numberCapLeft
+    score = score + cap_dis_val * shortestCap + cap_val * numberCapLeft + food_val * numberFoodLeft + food_dis_val * shortestFood
 
-        if d < 5:
-          score +=  d
-
-    score = score - 100* numberFoodLeft - 200 * numberCapLeft - 2 * shortestFood
     return score 
 
 
