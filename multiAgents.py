@@ -329,8 +329,6 @@ def betterEvaluationFunction(currentGameState):
     "*** YOUR CODE HERE ***"
     BIGNUM = float("inf")
     pacPos = currentGameState.getPacmanPosition()
-    x = pacPos[0]
-    y = pacPos[1]
     foodPos = currentGameState.getFood()
     ghostStates = currentGameState.getGhostStates() # in each state, show ghost scared or not
     # scaredTimes = [ghostState.scaredTimer for ghostState in ghostStates] #how much scared time they have left
@@ -344,10 +342,8 @@ def betterEvaluationFunction(currentGameState):
     numberFoodLeft = len(foodPos.asList())
     numberCapLeft = len(capPos)
     numberDotLeft = numberFoodLeft + numberCapLeft
-    score = 0
 
-    if surroundbywall(currentGameState, pacPos):
-      score -=1000
+    score = 0
     #distance to closeset food
     shortestFood = BIGNUM;
     for p in foodPos.asList():
@@ -366,18 +362,18 @@ def betterEvaluationFunction(currentGameState):
     for g in ghostStates:
       p = g.getPosition()
       d = util.manhattanDistance( pacPos, p)
-      if g.scaredTimer > 0: # not scared 
+      if g.scaredTimer > 0: #scared 
        
-        score -= d
+        score -= 10*d
         # if surroundbywall(currentGameState, pacPos):
         #   score -=1000
         # print("hey yo not scared", g.scaredTimer, score, d)
-      else:  # scared 
+      else:  # not scared 
 
         if d < 5:
           score +=  d
 
-    score = - 15* numberFoodLeft - 20 * numberCapLeft - 2 * shortestFood
+    score = score - 100* numberFoodLeft - 200 * numberCapLeft - 2 * shortestFood
     return score 
 
 
