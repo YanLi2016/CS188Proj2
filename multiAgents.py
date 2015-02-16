@@ -358,31 +358,59 @@ def betterEvaluationFunction(currentGameState):
         shortestCap = d
     #ghostdistance score   
 
-    #value table, smaller score the more important
-    scared_val = -10
-    unscared_val = 5
-    bound_dis = 5
-    food_val = -100
-    cap_val = -200
-    food_dis_val = -2
-    cap_dis_val = -4
-
-    inbound = 0 #check if any not scared ghost is in bound dis
-
+    
     for g in ghostStates:
       p = g.getPosition()
       d = util.manhattanDistance( pacPos, p)
-      if g.scaredTimer > 0: #scared  
-        score += scared_val * d
-        inbound = 0
+      if g.scaredTimer > 0: #scared 
+       
+        score -= 10*d
+        # if surroundbywall(currentGameState, pacPos):
+        #   score -=1000
+        # print("hey yo not scared", g.scaredTimer, score, d)
       else:  # not scared 
-        if d < bound_dis:
-          score +=  unscared_val * d
-          inbound += 1
 
-    if not numberCapLeft == 0 and inbound:
-      score = score + cap_dis_val * shortestCap
-    score = score + cap_val * numberCapLeft + food_val * numberFoodLeft + food_dis_val * shortestFood
+        if d < 5:
+          score +=  d
+
+    score = score - 100* numberFoodLeft - 200 * numberCapLeft - 2 * shortestFood
+    return score 
+
+
+def surroundbywall(currentGameState, pacPos):
+  x = pacPos[0]
+  y = pacPos[1]
+  walls = currentGameState.getWalls()
+  if walls[x + 1][y] or walls[x - 1][y] or walls[x][y + 1] or walls[x][y -1]:
+    return True
+  return False 
+
+
+
+
+# def pluswalldis(currentGameState, xy1, xy2):
+    
+#     cost = util.manhattanDistance(xy1, xy2)
+#     walls = currentGameState.getWalls()
+    
+#     x1 = xy1[0]
+#     y1 = xy1[1]
+#     x2 = int(xy2[0])
+#     y2 = int(xy2[1])
+#     a, b, c, d = 0, 0, 0, 0 
+#     for x in range(min(x1,x2), max(x1,x2)):
+#         if walls[x][y1]:
+#             a = a + 1
+#         if walls[x][y2]:
+#             b = b + 1
+#     for y in range(min(y1, y2), max(y1, y2)):
+#         if walls[x1][y]:
+#             c = c + 1
+#         if walls[x2][y]:
+#             d = d + 1
+#     one = (c + b + cost) 
+#     two = (a + d + cost) 
+#     return min(one, two)
 
 # Abbreviation
 better = betterEvaluationFunction
