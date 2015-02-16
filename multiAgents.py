@@ -98,6 +98,8 @@ class ReflexAgent(Agent):
             #not scared
             if manhattanDistance(ghostState.getPosition(), newPos) < 5:
               score = score + 3*manhattanDistance(ghostState.getPosition(), newPos)
+              if newPos == currentGameState.getPacmanPosition:
+                score = score - 200
 
         foodlist = newFood.asList()
         minh = 999999
