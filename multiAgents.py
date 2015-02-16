@@ -218,7 +218,52 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        BIGNUM = float("inf")
+        return self.value(gameState, self.index, self.depth, -BIGNUM, BIGNUM)[1]
+
+
+    def value(self,gameState,agentIndex, currdepth, alpha, beta):
+      """ an evaluate function that returns the value of current node
+      alpha is the max's best option on path to root
+      beta is min's best option on path to root """
+      # print("agentIndex: ", agentIndex, "currdepth: ", currdepth)
+      BIGNUM = float("inf")
+      numofghosts = gameState.getNumAgents()- 1 
+      
+      if currdepth == 0 or gameState.isLose() or gameState.isWin():
+        finalvalue = self.evaluationFunction(gameState)
+        return (finalvalue, None)
+      if agentIndex == 0: #maximizer
+        bestvalue = -BIGNUM
+        bestaction = None
+        for possibleaction in gameState.getLegalActions(agentIndex):
+          successorState = gameState.generateSuccessor(agentIndex, possibleaction)
+          val, action = self.value(successorState,agentIndex + 1, currdepth, alpha, beta)
+          if val > bestvalue:
+            bestvalue = val
+            bestaction = possibleaction
+          if bestvalue > beta:
+            return (bestvalue, bestaction)
+          alpha = max(alpha, bestvalue)
+        return (bestvalue, bestaction)
+      else: #minimizer 
+        bestvalue = BIGNUM
+        bestaction = None 
+        for possibleaction in gameState.getLegalActions(agentIndex):
+          successorState = gameState.generateSuccessor(agentIndex, possibleaction)
+          if agentIndex < numofghosts:
+            val, action = self.value(successorState, agentIndex + 1, currdepth, alpha, beta)
+          else:
+            val, action = self.value(successorState, 0, currdepth - 1, alpha, beta )
+          if val < bestvalue:
+            bestvalue = val
+            bestaction = possibleaction
+          if bestvalue < alpha:
+            return (bestvalue, bestaction)
+          beta = min(beta, bestvalue) 
+        return (bestvalue, bestaction)
+
+        
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
