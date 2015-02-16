@@ -178,7 +178,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        print("number of agents: ", gameState.getNumAgents(), "depth: ", self.depth)
+        actions = gameState.getLegalActions()
+        best_action = None
+        best_value = -float("inf")
+        for action in actions:
+          newgameState = gameState.generateSuccessor(0, action)
+          action_value = self.value(newgameState, 0, self.depth - 1)
+          #print("action: ", action, "value: ", action_value)
+          if action_value > best_value:
+            best_value = action_value
+            best_action = action
+        return action
+
+    def value(self, gameState, agentIndex, depth):
+        #return the value of newgameState, given current gamestate and action
+        print("agentIndex: ", agentIndex, "depth: ", depth)
+        if agentIndex == gameState.getNumAgents() - 1 and depth == 0:
+          print("end reached")
+          print("evaluation: ", agentIndex, action, depth, self.evaluationFunction(gameState))
+          return self.evaluationFunction(gameState)
+        next_agent = (agentIndex + 1) % gameState.getNumAgents()
+        if next_agent == 0:
+          return self.max_value(gameState, next_agent, depth - 1)
+        else:
+          return self.min_value(gameState, next_agent, depth)
+
+    def max_value(self, gameState, agentIndex, depth):
+        actions = gameState.getLegalActions(agentIndex)
+        v = -float("inf")
+        for action in actions:
+          newgameState = gameState.generateSuccessor(agentIndex, action)
+          v = max(v, self.value(newgameState, agentIndex, depth))
+        #print("max_value in", agentIndex, depth, v)
+        return v
+
+    def min_value(self, gameState, agentIndex, depth):
+        actions = gameState.getLegalActions(agentIndex)
+        v = float("inf")
+        for action in actions:
+          newgameState = gameState.generateSuccessor(agentIndex, action)
+          v = min(v, self.value(gameState, agentIndex, depth))
+        #print("min_value in", agentIndex, depth, v)
+        return v
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
