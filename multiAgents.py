@@ -368,9 +368,13 @@ def betterEvaluationFunction(currentGameState):
         score = score + d
 
     score = score - 100* numberFoodLeft - 300 * numberCapLeft - 2 * shortestFood 
+    if currentGameState.isLose():
+      score = -BIGNUM
+    if currentGameState.isWin():
+      score = BIGNUM
+
     #print("here, ",pacPos, score, numberFoodLeft)
     return score 
-
 
 # Abbreviation
 better = betterEvaluationFunction
