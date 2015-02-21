@@ -349,12 +349,18 @@ def betterEvaluationFunction(currentGameState):
     s3Food = BIGNUM;
     for p in foodPos.asList():
       d = util.manhattanDistance( pacPos, p)
-      if numberFoodLeft < 10:
-        d = getRealDis(currentGameState, p)
       if d < s1Food:
         s3Food = s2Food
         s2Food = s1Food
         s1Food = d
+
+    if numberFoodLeft == 1:
+      prob = PositionSearchProblem(currentGameState, foodPos.asList()[0])
+      moves = breadthFirstSearch(prob)
+      s1Food = len(moves)
+      #print(s1Food)      
+
+
 
     #distance to closest cap
     shortestCap= BIGNUM;
@@ -368,7 +374,7 @@ def betterEvaluationFunction(currentGameState):
       p = g.getPosition()
       d = util.manhattanDistance( pacPos, p)
       if g.scaredTimer > 0: #scared 
-        score -= 4 * d 
+        score -= 100*d
       else:
         score = score + d
 
@@ -380,17 +386,11 @@ def betterEvaluationFunction(currentGameState):
     if currentGameState.isWin():
       score = BIGNUM + currentGameState.getScore()
 
-    #print("here, ",pacPos, score, numberFoodLeft,"cap left, ", numberCapLeft)
+    print("here, ",pacPos, score, numberFoodLeft,"cap left, ", numberCapLeft)
     return score 
 
 # Abbreviation
 better = betterEvaluationFunction
-
-def getRealDis(gameState,p):
-  prob = PositionSearchProblem(gameState, p)
-  moves = breadthFirstSearch(prob)
-  #print(len(moves))
-  return len(moves)
 
 class SearchProblem:
     """
@@ -467,7 +467,7 @@ class PositionSearchProblem(SearchProblem):
     Note: this search problem is fully specified; you should NOT change it.
     """
 
-    def __init__(self, gameState, goal, costFn = lambda x: 1, start=None, warn=False, visualize=False):
+    def __init__(self, gameState, goal, costFn = lambda x: 1, start=None, warn=True, visualize=False):
         """
         Stores the start and goal.
 

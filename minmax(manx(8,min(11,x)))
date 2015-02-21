@@ -1,0 +1,6 @@
+minmax(manx(8,min(11,x)))
+
+expect(max(10,(11+x)/2))
+repeated 1 A
+repeat 0
+  or 10
